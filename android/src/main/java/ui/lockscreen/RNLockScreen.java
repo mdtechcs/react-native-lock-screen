@@ -7,6 +7,8 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import com.andrognito.patternlockview.PatternLockView;
 import com.andrognito.patternlockview.listener.PatternLockViewListener;
 import com.andrognito.patternlockview.utils.PatternLockUtils;
@@ -39,7 +41,6 @@ public class RNLockScreen extends ViewGroupManager<ViewGroup> {
     @Override
     protected FrameLayout createViewInstance(final ThemedReactContext reactContext) {
         context = reactContext;
-
         frameLayout = new FrameLayout(reactContext);
         return frameLayout;
     }
@@ -92,17 +93,33 @@ public class RNLockScreen extends ViewGroupManager<ViewGroup> {
         }
     }
 
+    @Override
+    public void onDropViewInstance(@NonNull ViewGroup view) {
+        if (patternLockView != null) {
+            patternLockView = null;
+        }
+        super.onDropViewInstance(view);
+    }
+
+    @Override
+    public void removeAllViews(ViewGroup parent) {
+        if (patternLockView != null) {
+            patternLockView = null;
+        }
+        super.removeAllViews(parent);
+    }
+
     private PatternLockViewListener patternLockViewListener = new PatternLockViewListener() {
         @Override
         public void onStarted() {
             context.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-                    new LockEvent(frameLayout.getId(),"started", ""));
+                    new LockEvent(frameLayout.getId(), "started", ""));
         }
 
         @Override
         public void onProgress(List<PatternLockView.Dot> pattern) {
             context.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-                    new LockEvent(frameLayout.getId(),"progress", PatternLockUtils.patternToString(patternLockView, pattern)));
+                    new LockEvent(frameLayout.getId(), "progress", PatternLockUtils.patternToString(patternLockView, pattern)));
         }
 
         @Override
@@ -118,13 +135,13 @@ public class RNLockScreen extends ViewGroupManager<ViewGroup> {
             }
 
             context.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-                    new LockEvent(frameLayout.getId(),"completed", PatternLockUtils.patternToString(patternLockView, pattern)));
+                    new LockEvent(frameLayout.getId(), "completed", PatternLockUtils.patternToString(patternLockView, pattern)));
         }
 
         @Override
         public void onCleared() {
             context.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-                    new LockEvent(frameLayout.getId(),"cleared", ""));
+                    new LockEvent(frameLayout.getId(), "cleared", ""));
 
         }
     };

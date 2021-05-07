@@ -265,6 +265,7 @@ class RNLockScreen extends Component {
   _renderLockFragment() {
     let {
       pinProps,
+      patternProps,
       lockFragmentProps,
       mode,
       renderLockFragment,
@@ -317,8 +318,8 @@ class RNLockScreen extends Component {
             this.state.state === HeaderFragment.State.Default ? false : true
           }
           lock={lock}
-          style={containerProps}
           {...lockFragmentProps}
+          {...patternProps}
         />
       );
     }
